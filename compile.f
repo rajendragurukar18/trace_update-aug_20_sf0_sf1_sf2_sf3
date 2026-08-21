@@ -1,0 +1,16 @@
+RTL/branch_map.v
+RTL/inst_trace_enformat1.v
+RTL/inst_trace_enformat2.v
+RTL/inst_trace_enformat3_enableblock.v
+RTL/inst_trace_enformat3_mux.v
+RTL/inst_trace_enformat3_sf0.v
+RTL/inst_trace_enformat3_sf1.v
+RTL/inst_trace_enformat3_sf2.v
+RTL/inst_trace_enformat3_sf3.v
+RTL/inst_trace_enmodule.v
+#RTL/trace_fifo.v
+RTL/atb_trans.sv
+RTL/top_trace.sv
+RTL/apb_slave_reg_core_trace.sv
+RTL/async_fifo_trace.sv
+RTL/top_core_trace.sv

@@ -1,0 +1,29 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-XLMODE
+./xcelium.d/run.lnx8664.20.09.d
+-RUNMODE
+branch_map.v
+inst_trace_enformat1.v
+inst_trace_enformat2.v
+inst_trace_enformat3_enableblock.v
+inst_trace_enformat3_mux.v
+inst_trace_enformat3_sf0.v
+inst_trace_enformat3_sf1.v
+inst_trace_enformat3_sf2.v
+inst_trace_enformat3_sf3.v
+inst_trace_enmodule.v
+trace_fifo.v
+atb_trans.sv
+top_trace.sv
+-CDSLIB
+./xcelium.d/run.lnx8664.20.09.d/cdsrun.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.20.09.d/hdlrun.var
+-MESSAGES
+-UPDATE
+-XLLIBSTORE
+./xcelium.d/run.lnx8664.20.09.d/xllibs
+-ALLOWUNBOUND

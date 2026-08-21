@@ -1,0 +1,115 @@
+`timescale 1ns/1ps
+module top_core_trace (
+    input               it_clk,
+    input               it_rst_n,
+
+    // Trace Encoder Inputs
+    input   [3:0]       it_itype,
+    input   [19:0]      it_iaddr,
+    input   [7:0]       it_cause,
+    input   [19:0]      it_tval,
+    input   [2:0]       it_priv,
+    input   [2:0]       it_context,
+    input               it_trace_enable,
+    input               it_ienable_in,
+    input               it_itype_valid,
+    input               it_first_instrn_valid_in,
+    input   [19:0]      it_delta_addr,      //from hart
+    input               it_del_adr_valid,
+
+    // Flush Interface
+    input               afvalid_i,
+    output              afready_o,
+
+    // ATB Interface
+    input               atready_i,
+    output  [15:0]      atdata_o,
+    output              atvalid_o,
+    output  [6:0]       atid_o,
+    output  [2:0]       atbytes_o,
+
+  // APB Interface
+  input  logic                     pclk_i,
+  input  logic                     presetn_i,
+  input  logic [ADDR_WIDTH-1:0]    paddr_i,
+  input  logic                     psel_i,
+  input  logic                     penable_i,
+  input  logic                     pwrite_i,
+  input  logic [DATA_WIDTH-1:0]    pwdata_i,
+  output logic [DATA_WIDTH-1:0]    prdata_o,
+  output logic                     pready_o,
+  output logic                     pslverr_o
+  );
+
+   /*AUTOLOGIC*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   logic [REGISTER_WIDTH-1:0] core_trace_reg_ctrl_o;// From i_apb_reg_core_trace of apb_slave_reg_core_trace.v
+   logic [63:0]		it_rdata;		// From i_itrace_top of itrace_top.v
+   logic		it_rempty;		// From i_itrace_top of itrace_top.v
+   logic		mux_sync_ctrl_o;	// From i_apb_reg_core_trace of apb_slave_reg_core_trace.v
+   logic [2:0]		rst_ctrl_reg_o;		// From i_apb_reg_core_trace of apb_slave_reg_core_trace.v
+   // End of automatics
+
+/*
+     itrace_top AUTO_TEMPLATE "i_itrace_top" (
+                    .core_trace_ctrl_reg_i(apb_w),
+);
+
+    apb_slave_reg_core_trace AUTO_TEMPLATE "^i_apb_\(.*\)_ctrl$" (
+                    .core_trace_ctrl_reg_o(apb2@_gen_clk_ctrl_w),
+);
+*/
+
+   top_trace i_itrace_top (/*AUTOINST*/
+			    // Outputs
+			    .it_rempty		(it_rempty),
+			    .it_rdata		(it_rdata[63:0]),
+			    // Inputs
+			    .it_clk		(it_clk),
+			    .it_rst_n		(it_rst_n),
+			    .it_itype		(it_itype[3:0]),
+			    .it_iaddr		(it_iaddr[19:0]),
+			    .it_cause		(it_cause[7:0]),
+			    .it_tval		(it_tval[19:0]),
+			    .it_priv		(it_priv[2:0]),
+			    .it_context		(it_context[2:0]),
+			    .it_trace_enable	(it_trace_enable),
+			    .it_ienable_in	(it_ienable_in),
+			    .it_itype_valid	(it_itype_valid),
+			    .it_first_instrn_valid_in(it_first_instrn_valid_in),
+			    .it_delta_addr	(it_delta_addr[19:0]),
+			    .it_del_adr_valid	(it_del_adr_valid));
+
+    logic apb2ndff_sync_w;
+    logic apb2ndff_sync_d;
+    logic ndff2core_trace_sync_q;
+
+    always_ff@(posedge it_clk or negedge it_rst_n) begin
+        if(!it_rst_n) begin
+            apb2ndff_sync_d <= 1'b0;
+            ndff2core_trace_sync_q <= 1'b0;
+        end else begin
+            apb2ndff_sync_d <= apb2ndff_sync_w;
+            ndff2core_trace_sync_q <= apb2ndff_sync_d;
+        end
+   end
+
+   apb_slave_reg_core_trace i_apb_reg_core_trace (
+					      // Outputs
+					      .prdata_o		(prdata_o),
+					      .pready_o		(pready_o),
+					      .pslverr_o	(pslverr_o),
+					      .core_trace_ctrl_reg_o(apb2ndff_sync_w),
+					      // Inputs
+					      .pclk_i		(pclk_i),
+					      .presetn_i	(presetn_i),
+					      .paddr_i		(paddr_i),
+					      .psel_i		(psel_i),
+					      .penable_i	(penable_i),
+					      .pwrite_i		(pwrite_i),
+					      .pwdata_i		(pwdata_i));
+
+
+
+endmodule
+

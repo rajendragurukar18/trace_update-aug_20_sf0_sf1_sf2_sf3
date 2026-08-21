@@ -1,0 +1,17 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/branch_map.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat1.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat2.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat3_enableblock.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat3_mux.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat3_sf0.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat3_sf1.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat3_sf2.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enformat3_sf3.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/inst_trace_enmodule.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/trace_fifo.v
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/atb_trans.sv
+/home/sgeuser36/Desktop/trace_atb/trace1/RTL/top_trace.sv

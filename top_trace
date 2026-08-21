@@ -1,0 +1,122 @@
+`timescale 1ns/1ps
+
+module itrace_top(
+    input               it_clk,
+    input               it_rst_n,
+
+    // Trace Encoder Inputs
+    input   [3:0]       it_itype,
+    input   [19:0]      it_iaddr,
+    input   [7:0]       it_cause,
+    input   [19:0]      it_tval,
+    input   [2:0]       it_priv,
+    input   [2:0]       it_context,
+    input               it_trace_enable,
+    input               it_ienable_in,
+    input               it_itype_valid,
+    input               it_first_instrn_valid_in,
+    input   [19:0]      it_delta_addr,
+    input               it_del_adr_valid,
+
+    // Flush Interface
+    input               afvalid_i,
+    output              afready_o,
+
+    // ATB Interface
+    input               atready_i,
+    output  [63:0]      atdata_o,
+    output              atvalid_o,
+    output  [6:0]       atid_o,
+    output  [2:0]       atbytes_o
+);
+
+wire [63:0] wdata_w;
+wire        wr_en_w;
+
+wire        fifo_wfull_w;
+wire        fifo_rempty_w;
+wire        fifo_ren_w;
+wire [63:0] fifo_rdata_w;
+
+/////////////////////////////////////////////////////////////
+// Trace Encoder
+/////////////////////////////////////////////////////////////
+
+inst_trace_enmodule te_inst
+(
+    .te_ienable_in          (it_ienable_in),
+    .itype_valid_i          (it_itype_valid),
+    .itype_in               (it_itype),
+    .cause_in               (it_cause),
+    .tval_in                (it_tval),
+    .priv_in                (it_priv),
+    .iaddr_in               (it_iaddr),
+    .context_in             (it_context),
+    .delta_addr             (it_delta_addr),
+    .del_addr_valid         (it_del_adr_valid),
+    .clk                    (it_clk),
+    .rst_n                  (it_rst_n),
+    .first_instrn_valid_in  (it_first_instrn_valid_in),
+    .fifo_wfull             (fifo_wfull_w),
+    .te_trace_enable        (it_trace_enable),
+    .packet_format3_o       (wdata_w),
+    .wr_en_out              (wr_en_w)
+);
+
+/////////////////////////////////////////////////////////////
+// Trace FIFO
+/////////////////////////////////////////////////////////////
+
+trace_fifo #(
+    .DATA_WIDTH (64),
+    .ADDR_WIDTH (8)
+)
+u_trace_fifo
+(
+    .tf_wclk    (it_clk),
+    .tf_wen     (wr_en_w),
+    .tf_wrst_n  (it_rst_n),
+    .tf_wdata   (wdata_w),
+
+    .tf_rclk    (it_clk),
+    .tf_ren     (fifo_ren_w),
+    .tf_rrst_n  (it_rst_n),
+    .tf_rdata   (fifo_rdata_w),
+
+    .tf_wfull   (fifo_wfull_w),
+    .tf_rempty  (fifo_rempty_w)
+);
+
+/////////////////////////////////////////////////////////////
+// ATB Transmitter
+/////////////////////////////////////////////////////////////
+
+atb_transmitter
+#(
+    .DATA_WIDTH (64),
+    .ATID_WIDTH (7),
+    .ATID_VALUE (7'h01)
+)
+u_atb_transmitter
+(
+    .atclk      (it_clk),
+    .atresetn   (it_rst_n),
+
+    // FIFO Interface
+    .tf_rdata   (fifo_rdata_w),
+    .tf_rempty  (fifo_rempty_w),
+    .tf_ren     (fifo_ren_w),
+
+    // Flush Interface
+    .afvalid_i  (afvalid_i),
+    .afready_o  (afready_o),
+
+    // ATB Interface
+    .atdata_o   (atdata_o),
+    .atvalid_o  (atvalid_o),
+    .atready_i  (atready_i),
+    .atid_o     (atid_o),
+    .atbytes_o  (atbytes_o)
+);
+
+endmodule
